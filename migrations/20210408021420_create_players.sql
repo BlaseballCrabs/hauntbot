@@ -1,0 +1,4 @@
+CREATE TABLE players(
+    id INTEGER PRIMARY KEY,
+    uuid TEXT UNIQUE NOT NULL
+);

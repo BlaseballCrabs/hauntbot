@@ -1,0 +1,93 @@
+{
+  "db": "SQLite",
+  "4382005e989dadfbe1d0fae4329815e0e0bc43a7cb753cbbf246834cda6ff53b": {
+    "query": "INSERT OR IGNORE INTO webhooks (url) VALUES (?)",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 1
+      },
+      "nullable": []
+    }
+  },
+  "4473d3d32dfb6fc2bb39ee5a0b89fb9d8ddad775ed7a5532965b846b13ccce83": {
+    "query": "SELECT COUNT(*) as count FROM webhooks",
+    "describe": {
+      "columns": [
+        {
+          "name": "count",
+          "ordinal": 0,
+          "type_info": "Int"
+        }
+      ],
+      "parameters": {
+        "Right": 0
+      },
+      "nullable": [
+        false
+      ]
+    }
+  },
+  "59a508416656b1eab002e877c87d560b5239ebbcd8ffc5e8c21d25e494bef204": {
+    "query": "INSERT INTO players (uuid) VALUES (?)",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 1
+      },
+      "nullable": []
+    }
+  },
+  "66b10dfe61b927080dd7a769f258d69cf6e5d2d0b2b49029f73b109869d8fb94": {
+    "query": "SELECT id, url FROM webhooks",
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int64"
+        },
+        {
+          "name": "url",
+          "ordinal": 1,
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Right": 0
+      },
+      "nullable": [
+        false,
+        false
+      ]
+    }
+  },
+  "a043fd4969b146748774f19e71cc1333d0003403922cb13004c7449c0a807bfe": {
+    "query": "DELETE FROM webhooks WHERE url = ?",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 1
+      },
+      "nullable": []
+    }
+  },
+  "e115c48b9cd2c54cfc77239624ef89441cd2f436d52fc43f8d66eb4ca5526e63": {
+    "query": "SELECT uuid FROM players",
+    "describe": {
+      "columns": [
+        {
+          "name": "uuid",
+          "ordinal": 0,
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Right": 0
+      },
+      "nullable": [
+        false
+      ]
+    }
+  }
+}

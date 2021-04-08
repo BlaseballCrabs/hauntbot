@@ -1,0 +1,4 @@
+CREATE TABLE webhooks(
+    id INTEGER PRIMARY KEY,
+    url TEXT UNIQUE NOT NULL
+);
