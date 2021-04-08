@@ -30,9 +30,7 @@ pub struct WebhookPayload<'a> {
 }
 
 async fn send_message(db: &Database, url: &str, embeds: &[Embed]) -> Result<()> {
-    let hook = WebhookPayload {
-        embeds,
-    };
+    let hook = WebhookPayload { embeds };
 
     let resp = surf::post(url)
         .body(surf::Body::from_json(&hook).map_err(|x| x.into_inner())?)
@@ -42,10 +40,9 @@ async fn send_message(db: &Database, url: &str, embeds: &[Embed]) -> Result<()> 
 
     let remaining: usize = resp
         .header("X-RateLimit-Remaining")
-        .context("missing remaining requests")?
-        .last()
-        .as_str()
-        .parse()?;
+        .map(|x| x.last().as_str().parse())
+        .transpose()?
+        .unwrap_or(1);
 
     debug!("{} requests left", remaining);
 
