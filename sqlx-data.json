@@ -28,14 +28,22 @@
       ]
     }
   },
-  "59a508416656b1eab002e877c87d560b5239ebbcd8ffc5e8c21d25e494bef204": {
-    "query": "INSERT INTO players (uuid) VALUES (?)",
+  "54df4d73f5bf6ffe1c456220da96d1eb3e255d37083b708008b676238a8fe895": {
+    "query": "SELECT uuid FROM hauntings",
     "describe": {
-      "columns": [],
+      "columns": [
+        {
+          "name": "uuid",
+          "ordinal": 0,
+          "type_info": "Text"
+        }
+      ],
       "parameters": {
-        "Right": 1
+        "Right": 0
       },
-      "nullable": []
+      "nullable": [
+        false
+      ]
     }
   },
   "66b10dfe61b927080dd7a769f258d69cf6e5d2d0b2b49029f73b109869d8fb94": {
@@ -72,22 +80,14 @@
       "nullable": []
     }
   },
-  "e115c48b9cd2c54cfc77239624ef89441cd2f436d52fc43f8d66eb4ca5526e63": {
-    "query": "SELECT uuid FROM players",
+  "cffbdb7ec3a4bb32b59df413ce2d4d2bf34cf1162a5a70f8e2a9b910b1d6a07e": {
+    "query": "INSERT INTO hauntings (uuid) VALUES (?)",
     "describe": {
-      "columns": [
-        {
-          "name": "uuid",
-          "ordinal": 0,
-          "type_info": "Text"
-        }
-      ],
+      "columns": [],
       "parameters": {
-        "Right": 0
+        "Right": 1
       },
-      "nullable": [
-        false
-      ]
+      "nullable": []
     }
   }
 }

@@ -82,7 +82,7 @@ pub fn watch(db: &Database) -> impl Future<Output = Result<()>> {
     async move {
         loop {
             debug!("fetching players from db...");
-            let known: HashSet<_> = db.player_uuids().try_collect().await?;
+            let known: HashSet<_> = db.haunting_uuids().try_collect().await?;
 
             let mut message = "".to_string();
 
@@ -98,7 +98,7 @@ pub fn watch(db: &Database) -> impl Future<Output = Result<()>> {
                 writeln!(message, "{} is Redacted!", found.name)?;
 
                 debug!("adding {:?} to db", found.id);
-                db.add_player(&found.id).await?;
+                db.add_haunting(&found.id).await?;
             }
 
             if message.is_empty() {
