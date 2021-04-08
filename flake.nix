@@ -21,7 +21,7 @@
           inherit system;
           overlays = [ rust-overlay.overlay naersk.overlay ];
         };
-        rust = pkgs.rust-bin.stable.latest.default;
+        rust = pkgs.rust-bin.beta.latest.default;
         inherit (pkgs.rust-bin.nightly.latest) cargo;
         naersk-lib = pkgs.naersk.override {
           inherit cargo;

@@ -5,24 +5,35 @@ use futures::prelude::*;
 use log::*;
 use serde::Serialize;
 use std::collections::HashSet;
-use std::fmt::Write;
 use std::time::Duration;
 
 pub mod db;
+pub mod hauntings;
 pub mod logger;
 pub mod oauth_listener;
-pub mod players;
+
+#[derive(Debug, Serialize)]
+pub struct Footer {
+    pub text: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct Embed {
+    pub title: String,
+    pub footer: Footer,
+    pub timestamp: String,
+}
 
 #[derive(Debug, Serialize)]
 pub struct WebhookPayload<'a> {
-    pub content: &'a str,
+    pub embeds: &'a [Embed],
     pub avatar_url: &'static str,
 }
 
-async fn send_message(db: &Database, url: &str, content: &str) -> Result<()> {
+async fn send_message(db: &Database, url: &str, embeds: &[Embed]) -> Result<()> {
     let hook = WebhookPayload {
-        content,
-        avatar_url: "http://hs.hiveswap.com/ezodiac/images/aspect_8.png",
+        embeds,
+        avatar_url: "http://hs.hiveswap.com/ezodiac/images/aspect_3.png",
     };
 
     let resp = surf::post(url)
@@ -66,10 +77,10 @@ async fn send_message(db: &Database, url: &str, content: &str) -> Result<()> {
     Ok(())
 }
 
-async fn send_messages(db: &Database, content: &str) -> Result<()> {
+async fn send_messages(db: &Database, embeds: &[Embed]) -> Result<()> {
     db.webhooks()
-        .try_for_each_concurrent(None, |hook| async move {
-            send_message(db, &hook.url, content).await?;
+        .try_for_each(|hook| async move {
+            send_message(db, &hook.url, embeds).await?;
             Ok(())
         })
         .await?;
@@ -81,30 +92,43 @@ pub fn watch(db: &Database) -> impl Future<Output = Result<()>> {
 
     async move {
         loop {
-            debug!("fetching players from db...");
+            debug!("fetching hauntings from db...");
             let known: HashSet<_> = db.haunting_uuids().try_collect().await?;
 
-            let mut message = "".to_string();
+            let mut message = Vec::new();
 
-            debug!("fetching redacted players...");
-            for found in players::redacted().await? {
-                debug!("checking {} ({:?})", found.name, found.id);
+            debug!("fetching hauntings from feed...");
+            for found in hauntings::hauntings().await? {
+                debug!("checking {:?}", found.id);
 
                 if known.contains(&found.id) {
                     debug!("already seen");
                     continue;
                 }
 
-                writeln!(message, "{} is Redacted!", found.name)?;
+                info!("{}", found.description);
+
+                message.push(Embed {
+                    title: found.description,
+                    footer: Footer {
+                        text: format!("Season {} Day {}", found.season + 1, found.day + 1),
+                    },
+                    timestamp: found.created,
+                });
 
                 debug!("adding {:?} to db", found.id);
                 db.add_haunting(&found.id).await?;
+
+                if message.len() >= 10 {
+                    debug!("hit max embeds, sending early");
+                    send_messages(&db, &message).await?;
+                    message.clear();
+                }
             }
 
             if message.is_empty() {
-                debug!("no players found");
+                debug!("no hauntings found");
             } else {
-                info!("{}", message);
                 send_messages(&db, &message).await?;
             }
 

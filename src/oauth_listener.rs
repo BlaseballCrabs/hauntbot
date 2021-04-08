@@ -25,7 +25,7 @@ pub fn listen(db: &Database, oauth: OAuth) -> impl Future<Output = Result<()>> {
         let mut app = tide::with_state(state);
         app.at("/").get(auth);
         app.at("/redirect").get(redirect);
-        app.listen("0.0.0.0:6120").await?;
+        app.listen("0.0.0.0:1111").await?;
 
         Ok(())
     }
