@@ -27,13 +27,11 @@ pub struct Embed {
 #[derive(Debug, Serialize)]
 pub struct WebhookPayload<'a> {
     pub embeds: &'a [Embed],
-    pub avatar_url: &'static str,
 }
 
 async fn send_message(db: &Database, url: &str, embeds: &[Embed]) -> Result<()> {
     let hook = WebhookPayload {
         embeds,
-        avatar_url: "http://hs.hiveswap.com/ezodiac/images/aspect_3.png",
     };
 
     let resp = surf::post(url)
