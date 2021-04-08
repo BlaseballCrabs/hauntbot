@@ -1,4 +1,4 @@
-CREATE TABLE players(
+CREATE TABLE hauntings(
     id INTEGER PRIMARY KEY,
     uuid TEXT UNIQUE NOT NULL
 );
