@@ -60,7 +60,7 @@
 
         devShell = pkgs.mkShell {
           inputsFrom = packages.hauntbot.builtDependencies;
-          nativeBuildInputs = with pkgs; [ sqlite rust-dev ];
+          nativeBuildInputs = with pkgs; [ sqliteInteractive rust-dev ];
         };
       }
     );
