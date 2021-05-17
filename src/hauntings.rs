@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct HauntingMetadata {
-    #[serde(rename = "mod")]
+    #[serde(default, rename = "mod")]
     pub modification: String,
 }
 
