@@ -95,7 +95,17 @@ pub fn watch(db: &Database) -> impl Future<Output = Result<()>> {
             let mut message = Vec::new();
 
             debug!("fetching hauntings from feed...");
-            for found in hauntings::hauntings(time - chrono::Duration::hours(6)).await? {
+
+            let hauntings = match hauntings::hauntings(time - chrono::Duration::hours(6)).await {
+                Ok(hauntings) => hauntings,
+                Err(err) => {
+                    error!("error fetching hauntings: {:?}", err);
+                    sleep(Duration::from_secs(30)).await;
+                    continue;
+                }
+            };
+
+            for found in hauntings {
                 debug!("checking {:?}", found.id);
 
                 if known.contains(&found.id) {
