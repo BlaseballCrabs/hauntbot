@@ -89,12 +89,10 @@ pub fn watch(db: &Database) -> impl Future<Output = Result<()>> {
 
     async move {
         loop {
-            debug!("fetching hauntings from db...");
+            debug!("fetching hauntings...");
             let known: HashSet<_> = db.haunting_uuids().try_collect().await?;
 
             let mut message = Vec::new();
-
-            debug!("fetching hauntings from feed...");
 
             let hauntings = match hauntings::hauntings(time - chrono::Duration::hours(6)).await {
                 Ok(hauntings) => hauntings,
@@ -105,15 +103,15 @@ pub fn watch(db: &Database) -> impl Future<Output = Result<()>> {
                 }
             };
 
-            for found in hauntings {
-                debug!("checking {:?}", found.id);
+            let mut seen = 0;
 
+            for found in hauntings {
                 if known.contains(&found.id) {
-                    debug!("already seen");
+                    seen += 1;
                     continue;
                 }
 
-                info!("{}", found.description);
+                info!("{}: {}", found.id, found.description);
 
                 message.push(Embed {
                     title: found.description,
@@ -134,14 +132,18 @@ pub fn watch(db: &Database) -> impl Future<Output = Result<()>> {
             }
 
             if message.is_empty() {
-                debug!("no hauntings found");
+                debug!("{} already seen, sleeping...", seen);
             } else {
+                if seen > 0 {
+                    debug!("+ {} already seen", seen);
+                }
+
                 send_messages(&db, &message).await?;
+                debug!("sleeping...");
             }
 
             time = Utc::now();
 
-            debug!("sleeping...");
             sleep(Duration::from_secs(5)).await;
         }
     }
