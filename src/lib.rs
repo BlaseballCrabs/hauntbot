@@ -118,10 +118,17 @@ pub fn watch(db: &Database) -> impl Future<Output = Result<()>> {
 
                 info!("{}: {}", found.id, found.description);
 
+                let category = hauntings::categorize(&found.player_tags[0]).await?;
+
                 message.push(Embed {
                     title: found.description,
                     footer: Footer {
-                        text: format!("Season {} Day {}", found.season + 1, found.day + 1),
+                        text: format!(
+                            "Season {} Day {} • Origin: {}",
+                            found.season + 1,
+                            found.day + 1,
+                            category
+                        ),
                     },
                     timestamp: found.created,
                 });
