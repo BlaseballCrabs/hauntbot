@@ -89,12 +89,17 @@ pub fn watch(db: &Database) -> impl Future<Output = Result<()>> {
 
     async move {
         loop {
-            debug!("fetching hauntings...");
-            let known: HashSet<_> = db.haunting_uuids().try_collect().await?;
-
             let mut message = Vec::new();
 
-            let hauntings = match hauntings::hauntings(time - chrono::Duration::hours(6)).await {
+            debug!("fetching data...");
+            let (known, hauntings): (Result<HashSet<_>>, _) = futures::join!(
+                db.haunting_uuids().try_collect(),
+                hauntings::hauntings(time - chrono::Duration::hours(6))
+            );
+
+            let known = known?;
+
+            let hauntings = match hauntings {
                 Ok(hauntings) => hauntings,
                 Err(err) => {
                     error!("error fetching hauntings: {:?}", err);
