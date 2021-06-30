@@ -62,11 +62,16 @@ impl fmt::Display for GhostCategory {
     }
 }
 
-pub async fn hauntings(after: DateTime<Utc>) -> Result<Vec<Event>> {
+pub async fn hauntings() -> Result<Vec<Event>> {
     #[derive(Serialize)]
     struct Query {
-        pub after: DateTime<Utc>,
         pub limit: usize,
+
+        #[serde(rename = "sortorder")]
+        pub sort_order: &'static str,
+
+        #[serde(rename = "sortby")]
+        pub sort_by: &'static str,
 
         #[serde(rename = "type")]
         pub event_type: usize,
@@ -77,12 +82,13 @@ pub async fn hauntings(after: DateTime<Utc>) -> Result<Vec<Event>> {
 
     let res = surf::get("https://api.sibr.dev/eventually/v2/events")
         .query(&Query {
-            after,
+            limit: 100,
+            sort_order: "desc",
+            sort_by: "{created}",
+            event_type: 106,
             metadata: HauntingMetadata {
                 modification: "INHABITING".to_string(),
             },
-            limit: 100,
-            event_type: 106,
         })
         .map_err(|x| anyhow!(x))?
         .await

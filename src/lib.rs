@@ -1,6 +1,5 @@
 use anyhow::{ensure, Context, Result};
 use async_std::task::sleep;
-use chrono::prelude::*;
 use db::Database;
 use futures::prelude::*;
 use log::*;
@@ -85,17 +84,14 @@ async fn send_messages(db: &Database, embeds: &[Embed]) -> Result<()> {
 
 pub fn watch(db: &Database) -> impl Future<Output = Result<()>> {
     let db = db.clone();
-    let mut time = Utc::now();
 
     async move {
         loop {
             let mut message = Vec::new();
 
             debug!("fetching data...");
-            let (known, hauntings): (Result<HashSet<_>>, _) = futures::join!(
-                db.haunting_uuids().try_collect(),
-                hauntings::hauntings(time - chrono::Duration::hours(6))
-            );
+            let (known, hauntings): (Result<HashSet<_>>, _) =
+                futures::join!(db.haunting_uuids().try_collect(), hauntings::hauntings());
 
             let known = known?;
 
@@ -153,8 +149,6 @@ pub fn watch(db: &Database) -> impl Future<Output = Result<()>> {
                 send_messages(&db, &message).await?;
                 debug!("sleeping...");
             }
-
-            time = Utc::now();
 
             sleep(Duration::from_secs(5)).await;
         }
